@@ -17,11 +17,11 @@ colnames = [
 # Cargar dataset
 data = pd.read_csv("zoo.data", names=colnames)
 
-# Variables (X) y etiqueta (y)
+
 X = data.drop(columns=["name", "class_type"])
 y = data["class_type"]
 
-# Diccionario class_type → nombre animal
+
 class_to_name = data.groupby("class_type")["name"].first().to_dict()
 
 # Entrenar modelo
@@ -32,16 +32,15 @@ model.fit(X, y)
 def predict():
     body = request.json
 
-    # Validación
+  
     required = list(X.columns)
     for field in required:
         if field not in body:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    # Crear vector de entrada
     values = [body[col] for col in X.columns]
 
-    # Predicción
+    
     predicted_class = int(model.predict([values])[0])
     animal_name = class_to_name.get(predicted_class, "Unknown")
 
@@ -51,7 +50,7 @@ def predict():
         "input_data": body
     })
 
-# Configuración para Render (puerto dinámico)
 if __name__ == "__main__":
+    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
